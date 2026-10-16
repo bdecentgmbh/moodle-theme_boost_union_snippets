@@ -4,7 +4,7 @@
  * Goal:          eyecandy
  * Description:   Turns the Boost Union smart menu bar into a slim, dark bar with small bold labels and right-aligned menu items. All offsets which Boost Union derives from the menu bar height are recalculated from one variable, so the layout stays intact.
  * Creator:       Stefan-Alexander Scholz
- * Tested on:     Moodle 5.2 with Boost Union 5.2 (SCSS compile checked, visual check pending)
+ * Tested on:     Moodle 5.3, Chrome
  * Usage note:    Only has an effect if a smart menu uses the location "Menu bar". To adjust the look, override the !default variables at the top in Raw initial SCSS.
  *
  * @copyright     2026 bdecent GmbH
