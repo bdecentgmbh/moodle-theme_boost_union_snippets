@@ -101,6 +101,10 @@ $busnippet-reportcards-color: var(--bs-body-color, #{$body-color}) !default;
         }
 
         // Individual icons for the reports which ship with Moodle core.
+        &[href*="/report/aiusage/"]::before {
+            content: "\f544"; // fa-robot.
+        }
+
         &[href*="/report/competency/"]::before {
             content: "\f559"; // fa-award.
         }
