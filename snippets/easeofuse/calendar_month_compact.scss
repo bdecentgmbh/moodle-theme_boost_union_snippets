@@ -72,25 +72,32 @@ $busnippet-calendarmonth-weekend-bg: rgba(var(--bs-emphasis-color-rgb, 0, 0, 0),
 // ---------------------------------------------------------------------------
 // The month view.
 //
-// .maincalendar .calendarmonth is the big month table of the calendar page. The mini calendar
-// of the calendar block uses .minicalendar and is not touched.
+// .maincalendar .calendarmonth is the month table of the calendar page and of the calendar block.
 // ---------------------------------------------------------------------------
+
+// Moodle puts every day number into a fixed 30px box, which only exists to draw today's circle.
+// Today is marked by its cell below, so the box can shrink to the number. That only happens where
+// Moodle lists the events by name: on the calendar page and in blocks in the content region, above
+// 768px. In its compact month view, in the calendar block in a side region and in every month view
+// up to 768px, Moodle marks a day with events by a dot which is positioned against this very box.
+@media (min-width: 768.02px) {
+    #page-calendar-view .maincalendar .calendarmonth,
+    [data-blockregion="content"] .block_calendar_month .maincalendar .calendarmonth {
+        td .day-number-circle {
+            width: auto;
+            height: auto;
+            line-height: inherit;
+
+            .day-number {
+                width: auto;
+                padding: 0;
+            }
+        }
+    }
+}
 
 .maincalendar .calendarmonth {
     font-size: $busnippet-calendarmonth-font-size;
-
-    // Moodle puts every day number into a fixed 30px box, which only exists to draw today's
-    // circle. Today is marked by its cell below, so the box can shrink to the number.
-    td .day-number-circle {
-        width: auto;
-        height: auto;
-        line-height: inherit;
-
-        .day-number {
-            width: auto;
-            padding: 0;
-        }
-    }
 
     // A line instead of the circle in front of every event. Moodle draws the circle with a 2px
     // border in the colour of the event type, so keeping the left border only turns it into a
