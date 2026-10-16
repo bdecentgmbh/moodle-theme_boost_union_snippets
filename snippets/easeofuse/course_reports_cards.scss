@@ -4,7 +4,7 @@
  * Goal:          easeofuse
  * Description:   The course reports page shows the available reports as a plain list of links. This snippet turns it into a responsive grid of cards with an icon per report, which is easier to scan and gives larger click targets.
  * Creator:       Stefan-Alexander Scholz
- * Tested on:     Moodle 5.2 with Boost Union 5.2 (SCSS compile checked, visual check pending)
+ * Tested on:     Moodle 5.3, Chrome
  * Usage note:    Reports from additional plugins get a fallback icon. To adjust the look, override the !default variables at the top in Raw initial SCSS.
  *
  * @copyright     2026 bdecent GmbH
