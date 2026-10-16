@@ -4,7 +4,7 @@
  * Goal:          easeofuse
  * Description:   On the course and category management page, the details of a selected course open below both listings, usually below the fold. This snippet shows them in a sticky panel next to the listings on wide screens and above them on narrow screens, and marks the selected course more clearly.
  * Creator:       Stefan-Alexander Scholz
- * Tested on:     Moodle 5.2 with Boost Union 5.2 (SCSS compile checked, visual check pending)
+ * Tested on:     Moodle 5.3, Chrome
  * Usage note:    Only takes effect while a course is selected. The panel is moved visually only, so the reading order for screen readers is unchanged.
  *
  * @copyright     2026 bdecent GmbH
