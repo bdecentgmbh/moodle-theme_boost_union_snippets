@@ -45,6 +45,30 @@ $busnippet-calendarmonth-weekend-bg: rgba(var(--bs-emphasis-color-rgb, 0, 0, 0),
     max-width: $busnippet-calendarmonth-maxwidth;
 }
 
+// From Moodle 5.3 on, pages with the standard layout anchor the drawers and their toggle buttons
+// to the edges of the limited content width. On a full width page, they would float on top of the
+// calendar, so they go back to the edges of the window, as they are up to Moodle 5.2.
+// $drawer-anchored-toggler-top was introduced by Moodle 5.3, so it tells the two layouts apart.
+// Moodle's anchoring rules track the open drawers with :has() selectors whose specificity a page
+// specific rule cannot reach, hence the !important.
+@if global-variable-exists(drawer-anchored-toggler-top) {
+    #page-calendar-view {
+        .drawer-toggles .drawer-right-toggle,
+        .drawer.drawer-right,
+        .drawer.drawer-right.show {
+            right: 0 !important;
+            left: auto !important;
+        }
+
+        .drawer-toggles .drawer-left-toggle,
+        .drawer.drawer-left,
+        .drawer.drawer-left.show {
+            right: auto !important;
+            left: 0 !important;
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // The month view.
 //
