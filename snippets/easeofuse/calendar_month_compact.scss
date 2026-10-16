@@ -1,0 +1,102 @@
+/**
+ * Snippet Title: Compact full width month view in the calendar
+ * Scope:         global
+ * Goal:          easeofuse
+ * Description:   The month view of the calendar is held to the narrow content width, and every event spends room on a coloured circle, so event names are cut off early. This snippet lets the month use the full page width, marks events with a thin line in the colour of the event type, uses a smaller font and highlights today and the weekend.
+ * Creator:       Stefan-Alexander Scholz
+ * Tested on:     Moodle 5.3, Chrome
+ * Usage note:    Which days count as weekend follows the calendar_weekend setting. To adjust the look, override the !default variables at the top in Raw initial SCSS.
+ *
+ * @copyright     2026 bdecent GmbH
+ * @author        Stefan-Alexander Scholz <sts@bdecent.de>
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// ---------------------------------------------------------------------------
+// Configuration.
+// ---------------------------------------------------------------------------
+
+// The maximum width of the calendar page. Moodle limits it to the course content width (830px by
+// default). Use none to take the full width, or a length like 1600px for a wide but bounded page.
+$busnippet-calendarmonth-maxwidth: none !default;
+
+// The font size of the day numbers and the event names.
+$busnippet-calendarmonth-font-size: .8125rem !default;
+
+// The width of the line which marks an event, and of the line on top of today's cell.
+$busnippet-calendarmonth-line-width: 3px !default;
+
+// The highlighting of today's cell.
+$busnippet-calendarmonth-today-bg: rgba($primary, .08) !default;
+$busnippet-calendarmonth-today-color: $primary !default;
+
+// The tint of the weekend cells. It is a translucent version of the text color, which keeps the
+// weekend visible in the dark color mode of Moodle 5.3 as well.
+$busnippet-calendarmonth-weekend-bg: rgba(var(--bs-emphasis-color-rgb, 0, 0, 0), .035) !default;
+
+// ---------------------------------------------------------------------------
+// The full width page.
+//
+// The id of the calendar page is part of the selector, which makes it more specific than the
+// rules with which Moodle limits the width of .main-inner (4.5: .pagelayout-standard, 5.x: layout).
+// ---------------------------------------------------------------------------
+
+#page-calendar-view #page.drawers .main-inner {
+    max-width: $busnippet-calendarmonth-maxwidth;
+}
+
+// ---------------------------------------------------------------------------
+// The month view.
+//
+// .maincalendar .calendarmonth is the big month table of the calendar page. The mini calendar
+// of the calendar block uses .minicalendar and is not touched.
+// ---------------------------------------------------------------------------
+
+.maincalendar .calendarmonth {
+    font-size: $busnippet-calendarmonth-font-size;
+
+    // Moodle puts every day number into a fixed 30px box, which only exists to draw today's
+    // circle. Today is marked by its cell below, so the box can shrink to the number.
+    td .day-number-circle {
+        width: auto;
+        height: auto;
+        line-height: inherit;
+
+        .day-number {
+            width: auto;
+            padding: 0;
+        }
+    }
+
+    // A line instead of the circle in front of every event. Moodle draws the circle with a 2px
+    // border in the colour of the event type, so keeping the left border only turns it into a
+    // line of the very same colour, for every event type and for customised colours alike.
+    // The attribute selector matches the specificity of Moodle's rule per event type.
+    ul li .calendar-circle[class*="calendar_event_"] {
+        width: 0;
+        height: 1.1em;
+        margin-right: .35em;
+        border-width: 0 0 0 $busnippet-calendarmonth-line-width;
+        border-radius: 0;
+        background-color: transparent;
+        vertical-align: text-bottom;
+    }
+
+    // Today's whole cell is highlighted, with a line on top, instead of a circle around the number.
+    td.today {
+        background-color: $busnippet-calendarmonth-today-bg;
+        box-shadow: inset 0 $busnippet-calendarmonth-line-width 0 $busnippet-calendarmonth-today-color;
+
+        .day-number-circle {
+            border-radius: 0;
+            background-color: transparent;
+            color: $busnippet-calendarmonth-today-color;
+            font-weight: $font-weight-bold;
+        }
+    }
+
+    // The weekend. Moodle marks the days which the calendar_weekend setting defines as weekend.
+    td.weekend:not(.today) {
+        background-color: $busnippet-calendarmonth-weekend-bg;
+    }
+}
