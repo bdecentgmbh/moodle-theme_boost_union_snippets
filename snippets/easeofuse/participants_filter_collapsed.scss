@@ -1,0 +1,111 @@
+/**
+ * Snippet Title: Collapsed filter on the participants page
+ * Scope:         course
+ * Goal:          easeofuse
+ * Description:   On the participants page, the filter form takes up a lot of space although it is mostly needed in large courses. This snippet collapses it into a filter icon which unfolds on hover, tap or keyboard focus, and keeps it unfolded once a filter is applied. Hiding a control until it is pointed at is a deliberate trade-off of discoverability against a tidier page.
+ * Creator:       Stefan-Alexander Scholz
+ * Tested on:     Moodle 5.2 with Boost Union 5.2 (SCSS compile checked, visual check pending)
+ * Usage note:    CSS only, so there is no click toggle. The form is never collapsed for users whose system asks for more contrast or uses forced colors.
+ *
+ * @copyright     2026 bdecent GmbH
+ * @author        Stefan-Alexander Scholz <sts@bdecent.de>
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// ---------------------------------------------------------------------------
+// Configuration.
+// ---------------------------------------------------------------------------
+
+// The width and the height of the collapsed filter icon.
+// Set the width to 100% if you prefer a full width bar instead of a compact icon.
+$busnippet-participantsfilter-width: 2.5rem !default;
+$busnippet-participantsfilter-height: 2.5rem !default;
+
+// The size and the color of the filter icon.
+$busnippet-participantsfilter-icon-size: 1rem !default;
+// The color goes through Bootstrap's custom property where the Moodle version has it, so that the
+// icon follows the dark color mode of Moodle 5.3.
+$busnippet-participantsfilter-icon-color: var(--bs-body-color, #{$body-color}) !default;
+
+// ---------------------------------------------------------------------------
+// The collapsed filter.
+//
+// The enrolled users page is the only page which uses the core/datafilter templates
+// within a page of the type "course-view-participants", so the snippet is scoped to
+// this page type. The question bank filter, which is built from the same templates,
+// is not affected.
+//
+// The filter form is picked by its data-table-region attribute rather than by its parent:
+// Moodle 5.0 and later wrap it into a <form method="dialog">, Moodle 4.5 does not.
+// ---------------------------------------------------------------------------
+
+// The unfolded state of the filter form. It is needed in more than one place below.
+@mixin busnippet-participantsfilter-unfold {
+    width: auto;
+    max-height: none;
+    // Let the autocomplete suggestion lists of the filter values overflow the filter form again.
+    overflow: visible;
+
+    // Remove the filter icon which covers the filter form in the collapsed state.
+    &::before {
+        content: none;
+    }
+}
+
+#page-course-view-participants #region-main .filter-group[data-table-region] {
+    position: relative;
+    // Shrink the filter form down to the size of the filter icon.
+    // The filter form is only clipped, not hidden, so that it stays reachable with the keyboard.
+    width: $busnippet-participantsfilter-width;
+    max-height: $busnippet-participantsfilter-height;
+    overflow: hidden;
+
+    // The filter icon. It is drawn on top of the clipped filter form and covers it completely,
+    // so that none of the clipped form controls shines through or can be clicked accidentally.
+    // The inset is relative to the padding box, so the .p-2 padding of the filter form is covered as well.
+    &::before {
+        content: "\f0b0"; // fa-filter.
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        // Take over the background color of the filter form to hide the clipped form controls.
+        background-color: inherit;
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        font-size: $busnippet-participantsfilter-icon-size;
+        line-height: 1;
+        color: $busnippet-participantsfilter-icon-color;
+        cursor: pointer;
+    }
+
+    // The glyph is decorative, the filter form below it stays in the accessibility tree all the
+    // time. Where the browser supports alternative text for generated content, an empty one keeps
+    // screen readers from announcing the glyph.
+    @supports (content: "" / "") {
+        &::before {
+            content: "\f0b0" / "";
+        }
+    }
+
+    // Unfold the filter form when it is touched, hovered or used with the keyboard.
+    &:hover,
+    &:focus-within {
+        @include busnippet-participantsfilter-unfold;
+    }
+
+    // Unfold the filter form permanently as soon as a filter condition is set, so that
+    // the applied filter is never hidden from the user. An unused filter row carries an
+    // empty data-filter-type attribute, a used one carries the name of the filter type.
+    &:has([data-filterregion="filter"]:not([data-filter-type=""])) {
+        @include busnippet-participantsfilter-unfold;
+    }
+
+    // Never collapse the filter form for users who ask their system for more contrast or who use
+    // forced colors. Both are strong hints that the user relies on seeing all controls at once.
+    @media (prefers-contrast: more), (forced-colors: active) {
+        @include busnippet-participantsfilter-unfold;
+    }
+}
