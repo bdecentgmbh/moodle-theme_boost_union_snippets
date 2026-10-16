@@ -4,7 +4,7 @@
  * Goal:          easeofuse
  * Description:   On the course and category management page, every row carries a drag handle, a bulk checkbox and action icons, which makes the listings look busy. This snippet dims these controls until the row is hovered or focused, a deliberate trade-off of discoverability against a calmer page. The selected category and course keep them at full strength.
  * Creator:       Stefan-Alexander Scholz
- * Tested on:     Moodle 5.2 with Boost Union 5.2 (SCSS compile checked, visual check pending)
+ * Tested on:     Moodle 5.3, Chrome
  * Usage note:    The controls are dimmed, never hidden, so they stay clickable. They stay at full strength for users whose system asks for more contrast or uses forced colors.
  *
  * @copyright     2026 bdecent GmbH
