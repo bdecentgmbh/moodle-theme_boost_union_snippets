@@ -4,7 +4,7 @@
  * Goal:          easeofuse
  * Description:   The course and category management page always shows its sorting, per page and bulk move tools, although they are only needed while reorganising. This snippet shows them only while edit mode is on. Creating categories and courses and the per row actions stay available.
  * Creator:       Stefan-Alexander Scholz
- * Tested on:     Moodle 5.2 with Boost Union 5.2 (SCSS compile checked, visual check pending)
+ * Tested on:     Moodle 5.3, Chrome
  * Usage note:    CSS only: the tools are hidden, not removed, and come back with the edit mode switch. Use capabilities to actually restrict them.
  *
  * @copyright     2026 bdecent GmbH
