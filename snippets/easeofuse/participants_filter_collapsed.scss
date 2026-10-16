@@ -4,7 +4,7 @@
  * Goal:          easeofuse
  * Description:   On the participants page, the filter form takes up a lot of space although it is mostly needed in large courses. This snippet collapses it into a filter icon which unfolds on hover, tap or keyboard focus, and keeps it unfolded once a filter is applied. Hiding a control until it is pointed at is a deliberate trade-off of discoverability against a tidier page.
  * Creator:       Stefan-Alexander Scholz
- * Tested on:     Moodle 5.2 with Boost Union 5.2 (SCSS compile checked, visual check pending)
+ * Tested on:     Moodle 5.3, Chrome
  * Usage note:    CSS only, so there is no click toggle. The form is never collapsed for users whose system asks for more contrast or uses forced colors.
  *
  * @copyright     2026 bdecent GmbH
