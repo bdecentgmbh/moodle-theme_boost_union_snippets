@@ -1,0 +1,227 @@
+/**
+ * Snippet Title: Slim menu bar
+ * Scope:         global
+ * Goal:          eyecandy
+ * Description:   Turns the Boost Union smart menu bar into a slim, dark bar with small bold labels and right-aligned menu items. All offsets which Boost Union derives from the menu bar height are recalculated from one variable, so the layout stays intact.
+ * Creator:       Stefan-Alexander Scholz
+ * Tested on:     Moodle 5.3, Chrome
+ * Usage note:    Only has an effect if a smart menu uses the location "Menu bar". To adjust the look, override the !default variables at the top in Raw initial SCSS.
+ *
+ * @copyright     2026 bdecent GmbH
+ * @author        Stefan-Alexander Scholz <sts@bdecent.de>
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// ---------------------------------------------------------------------------
+// Configuration.
+// ---------------------------------------------------------------------------
+
+// The height of the slim menu bar (Boost Union uses 40px by default).
+$busnippet-slimmenubar-height: 26px !default;
+
+// The colors of the bar and of its menu items.
+$busnippet-slimmenubar-bg: $gray-900 !default;
+$busnippet-slimmenubar-color: $white !default;
+$busnippet-slimmenubar-hover-bg: rgba($white, .15) !default;
+$busnippet-slimmenubar-hover-color: $white !default;
+$busnippet-slimmenubar-active-bg: $white !default;
+$busnippet-slimmenubar-active-color: $busnippet-slimmenubar-bg !default;
+
+// The typography and the spacing of the menu items.
+$busnippet-slimmenubar-font-size: .8125rem !default;
+$busnippet-slimmenubar-font-weight: $font-weight-bold !default;
+$busnippet-slimmenubar-padding-x: .625rem !default;
+
+// The horizontal alignment of the menu items (flex-end = right, flex-start = left, center = centered).
+$busnippet-slimmenubar-justify-content: flex-end !default;
+
+// ---------------------------------------------------------------------------
+// Derived values. There should be no need to modify anything below this line.
+// ---------------------------------------------------------------------------
+
+// The offset of all elements which are stacked below the navbar and the menu bar.
+$busnippet-slimmenubar-offset: calc(#{$navbar-height} + #{$busnippet-slimmenubar-height});
+
+// Moodle 5.3 changed how the menu bar is built: its menu is rendered with React and the nav
+// pills of the Moodle design system, and Boost Union derives all offsets from one custom
+// property. $drawer-anchored-toggler-top was introduced by Moodle 5.3, and Boost Union only
+// runs on 5.3 from its 5.3 release on, so the variable tells the two layouts apart.
+$busnippet-slimmenubar-moodle53: global-variable-exists(drawer-anchored-toggler-top);
+
+// ---------------------------------------------------------------------------
+// The slim menu bar.
+// ---------------------------------------------------------------------------
+
+// Publish the height of the bar, so that sticky elements elsewhere on the site can offset
+// themselves against the full height of the fixed header. Moodle's own --navbar-height only
+// describes the navbar, while the menu bar is a second fixed bar stacked above it.
+:root {
+    --busnippet-slimmenubar-height: #{$busnippet-slimmenubar-height};
+}
+
+.theme-boost-union-smartmenu {
+    .navbar.fixed-top.boost-union-menubar {
+        // Shrink the bar itself. The navbar padding has to go as well, otherwise the
+        // menu items would not fit into the reduced height anymore.
+        height: $busnippet-slimmenubar-height;
+        min-height: $busnippet-slimmenubar-height;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+        background-color: $busnippet-slimmenubar-bg;
+
+        // Move the menu items to the configured side of the bar.
+        &.navbar-expand {
+            justify-content: $busnippet-slimmenubar-justify-content;
+        }
+
+        // Up to Moodle 5.2: shrink the menu container as well, Boost Union sets an explicit
+        // height there.
+        .moremenu,
+        .moremenu .more-nav {
+            height: $busnippet-slimmenubar-height;
+            flex-wrap: nowrap;
+        }
+
+        // Up to Moodle 5.2: style the top level menu items. Items within the dropdown menus
+        // are not touched, they should stay readable in their regular size.
+        .moremenu .more-nav > li > .nav-link {
+            display: flex;
+            align-items: center;
+            height: $busnippet-slimmenubar-height;
+            padding: 0 $busnippet-slimmenubar-padding-x;
+            // Boost adds an active border at the bottom which does not fit into a slim bar.
+            border-bottom: 0;
+            font-size: $busnippet-slimmenubar-font-size;
+            font-weight: $busnippet-slimmenubar-font-weight;
+            line-height: 1;
+            color: $busnippet-slimmenubar-color;
+
+            // Let smart menu icons follow the label color.
+            .icon {
+                color: inherit;
+            }
+
+            &:hover,
+            &:focus {
+                background-color: $busnippet-slimmenubar-hover-bg;
+                color: $busnippet-slimmenubar-hover-color;
+            }
+
+            // This covers the currently active menu item as well as an opened dropdown menu.
+            &.active,
+            &[aria-expanded="true"] {
+                border-color: transparent;
+                background-color: $busnippet-slimmenubar-active-bg;
+                color: $busnippet-slimmenubar-active-color;
+            }
+        }
+
+        // From Moodle 5.3 on: Boost Union gives the list items of the React menu the height of
+        // the menu bar, so they have to shrink with it.
+        .primarynav-navbar .more-nav li.nav-item {
+            height: $busnippet-slimmenubar-height;
+        }
+
+        // From Moodle 5.3 on: the nav pills take their colors from design tokens. Pointing the
+        // tokens at the colors of the slim bar on the pills themselves keeps the dropdown menus,
+        // which are not nav pills, in their regular colors.
+        .primarynav-navbar .more-nav li.nav-item .mds-nav-pill {
+            --mds-text-subtle: #{$busnippet-slimmenubar-color};
+            --mds-text-default: #{$busnippet-slimmenubar-active-color};
+            --mds-bg-nav-pill-hover: #{$busnippet-slimmenubar-hover-bg};
+            --mds-bg-nav-pill-pressed: #{$busnippet-slimmenubar-hover-bg};
+            --mds-bg-nav-pill-selected: #{$busnippet-slimmenubar-active-bg};
+            // The dot which marks the selected item.
+            --mds-bg-interactive-primary-default: #{$busnippet-slimmenubar-active-color};
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .primarynav-navbar .more-nav li.nav-item .mds-nav-pill__label {
+            font-size: $busnippet-slimmenubar-font-size;
+            font-weight: $busnippet-slimmenubar-font-weight;
+            line-height: 1;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// The offsets which Boost Union derives from the menu bar height.
+// ---------------------------------------------------------------------------
+
+@if $busnippet-slimmenubar-moodle53 {
+    // From Moodle 5.3 on, Boost Union moves the navbar, the page, the drawers and the drawer
+    // toggles by one custom property, so the slim height only has to go there. On devices on
+    // which the menu bar is hidden, Boost Union resets the property to zero with more specific
+    // selectors, which keep winning over this one.
+    .theme-boost-union-smartmenu:has(.navbar.boost-union-menubar) {
+        --bu-smartmenu-menubar-height: #{$busnippet-slimmenubar-height};
+    }
+}
+
+@if not $busnippet-slimmenubar-moodle53 {
+    // Up to Moodle 5.2, Boost Union calculates every offset from its SCSS variable, so all of
+    // them are recalculated here.
+    .theme-boost-union-smartmenu .navbar.fixed-top.boost-union-menubar {
+        // The navbar which is stacked below the menu bar.
+        + .navbar.fixed-top {
+            margin-top: $busnippet-slimmenubar-height;
+        }
+
+        // The page content.
+        ~ #page.drawers {
+            margin-top: $busnippet-slimmenubar-offset;
+        }
+
+        // The message drawer.
+        ~ [data-region="right-hand-drawer"].drawer {
+            top: $busnippet-slimmenubar-offset;
+        }
+
+        // The course index drawer and the block drawer.
+        ~ .drawer.drawer-left,
+        ~ .drawer.drawer-right {
+            top: calc(#{$busnippet-slimmenubar-offset} + 1px);
+        }
+    }
+
+    // The drawers are positioned differently on smaller screens.
+    @include media-breakpoint-down(lg) {
+        .theme-boost-union-smartmenu .navbar.fixed-top.boost-union-menubar ~ .drawer {
+            top: $busnippet-slimmenubar-offset;
+
+            &.drawer-right {
+                top: 0;
+            }
+        }
+    }
+
+    // The drawer toggler buttons float directly below the header.
+    @include media-breakpoint-up(md) {
+        .theme-boost-union-smartmenu .navbar.fixed-top.boost-union-menubar ~ #page.drawers .drawer-toggles .drawer-toggler {
+            top: calc(#{$busnippet-slimmenubar-offset} + 10px);
+        }
+    }
+
+    // If the menu bar is hidden on a particular viewport (which can happen if the smart menu
+    // is restricted to certain devices), Boost Union compensates the missing bar with a page
+    // offset which is based on the menu bar height as well. Keep these rules in sync.
+    @include media-breakpoint-up(lg) {
+        .theme-boost-union-smartmenu .navbar.fixed-top.boost-union-menubar.d-lg-none ~ #page.drawers {
+            margin-top: $busnippet-slimmenubar-height;
+        }
+    }
+
+    @include media-breakpoint-only(md) {
+        .theme-boost-union-smartmenu .navbar.fixed-top.boost-union-menubar.d-md-none ~ #page.drawers {
+            margin-top: $busnippet-slimmenubar-height;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        .theme-boost-union-smartmenu .navbar.fixed-top.boost-union-menubar.d-none ~ #page.drawers {
+            margin-top: $busnippet-slimmenubar-height;
+        }
+    }
+}
