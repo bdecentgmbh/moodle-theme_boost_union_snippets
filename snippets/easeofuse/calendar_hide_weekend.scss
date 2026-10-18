@@ -1,0 +1,38 @@
+/**
+ * Snippet Title: Calendar without the weekend
+ * Scope:         global
+ * Goal:          easeofuse
+ * Description:   On sites where events only take place on weekdays, the weekend columns of the calendar are empty space. This snippet hides them in the month view of the calendar and in the mini calendar. It follows the calendar_weekend setting and works with any first day of the week.
+ * Creator:       Stefan-Alexander Scholz
+ * Tested on:     Moodle 5.3, Chrome
+ * Usage note:    Events on weekend days are hidden as well; the day view and the upcoming events still show them.
+ *
+ * @copyright     2026 bdecent GmbH
+ * @author        Stefan-Alexander Scholz <sts@bdecent.de>
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// ---------------------------------------------------------------------------
+// The weekend columns.
+//
+// Moodle marks the day cells of the weekend with the weekend class, but neither the weekday
+// headers nor the blank cells before the first and after the last day of the month carry it.
+// Hiding just the marked cells would therefore shift the rows against the headers.
+//
+// Instead, a column is hidden as a whole as soon as one of its day cells is a weekend day. Every
+// month has at least four of each weekday, so every column holds real days to look at. This keeps
+// the snippet independent of the first day of the week (calendar_startwday) and of the days which
+// count as weekend (calendar_weekend). .calendartable is shared by the month view of the calendar
+// and the mini calendar of the calendar block.
+// ---------------------------------------------------------------------------
+
+table.calendartable {
+    @for $column from 1 through 7 {
+        &:has(td.weekend:nth-child(#{$column})) {
+            th:nth-child(#{$column}),
+            td:nth-child(#{$column}) {
+                display: none;
+            }
+        }
+    }
+}
