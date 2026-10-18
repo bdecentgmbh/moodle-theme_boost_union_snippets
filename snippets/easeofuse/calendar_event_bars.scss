@@ -1,0 +1,124 @@
+/**
+ * Snippet Title: Event bars in the compact calendar
+ * Scope:         global
+ * Goal:          easeofuse
+ * Description:   Where the month view of the calendar has no room for event names, Moodle only marks a day with events by a dot below its number: in the calendar block in a drawer or side region, and in every month view on phones. This snippet shows a thin bar in the colour of the event type for each event of the day instead, so a busy day stands out from a quiet one.
+ * Creator:       Stefan-Alexander Scholz
+ * Tested on:     Moodle 5.3, Chrome
+ * Usage note:    Shows up to three bars per day; the day itself still opens all its events. To adjust, override the !default variables at the top in Raw initial SCSS.
+ *
+ * @copyright     2026 bdecent GmbH
+ * @author        Stefan-Alexander Scholz <sts@bdecent.de>
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// ---------------------------------------------------------------------------
+// Configuration.
+// ---------------------------------------------------------------------------
+
+// The height of a bar and the space above it.
+$busnippet-calendarbars-height: 3px !default;
+$busnippet-calendarbars-gap: 2px !default;
+
+// The maximum number of bars per day. Further events of the day get no bar of their own.
+$busnippet-calendarbars-max: 3 !default;
+
+// ---------------------------------------------------------------------------
+// The bars.
+//
+// In the compact month view, Moodle hides the list of events of each day and draws a dot below
+// the day number. The list is shown again, with every event reduced to a bar, and the dot goes.
+// ---------------------------------------------------------------------------
+
+@mixin busnippet-calendarbars-day {
+    // Moodle's dot below the day number.
+    .day-number:before {
+        content: none;
+    }
+
+    // The list of events of the day.
+    [data-region="day-content"] {
+        display: block;
+
+        ul {
+            margin: 0;
+            padding: 0 .25rem;
+        }
+
+        li[data-region="event-item"] {
+            line-height: 0;
+
+            > a {
+                display: block;
+                max-width: none;
+                line-height: 0;
+            }
+        }
+
+        // The name stays available to screen readers and in the title of the link.
+        .eventname {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+        }
+
+        // The circle in front of the name becomes the bar. Moodle draws it with a border in the
+        // colour of the event type, so the top border alone is a bar of the very same colour, for
+        // every event type and for customised colours alike. These selectors are more specific than
+        // the one of the "Compact full width month view in the calendar" snippet, which turns the
+        // circle into a vertical line.
+        li[data-region="event-item"] .calendar-circle[class*="calendar_event_"] {
+            display: block;
+            width: 100%;
+            height: 0;
+            margin: $busnippet-calendarbars-gap 0 0;
+            border-width: $busnippet-calendarbars-height 0 0;
+            border-radius: $busnippet-calendarbars-height;
+            background-color: transparent;
+        }
+
+        // Events which started on an earlier day are listed by name only, and the more link would
+        // only add text.
+        li.events-underway,
+        li[data-region="event-item"]:nth-child(n + #{$busnippet-calendarbars-max + 1}),
+        li[data-action="view-more-events"] {
+            display: none !important;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// The two places where Moodle shows the compact month view.
+//
+// These are Moodle's own selectors and widths for its compact month view, so the bars appear
+// exactly where Moodle would otherwise draw its dots.
+// ---------------------------------------------------------------------------
+
+// The calendar block in any block region but the content region, from 768px on.
+@media (min-width: 768px) {
+    [data-blockregion]:not([data-blockregion="content"]) .block.block_calendar_month .maincalendar .calendartable.calendarmonth td.hasevent {
+        @include busnippet-calendarbars-day;
+    }
+}
+
+// Every month view, up to 768px.
+//
+// Below 768px, Bootstrap hides the version of the day with its events (.d-none.d-md-block) and
+// shows a version with the day number only (.d-md-none). For days with events, the version with
+// the events is shown instead. The utility classes carry !important, so the switch needs it too.
+@media (max-width: 768px) {
+    .maincalendar .calendartable.calendarmonth td.hasevent {
+        > .d-none.d-md-block {
+            display: block !important;
+        }
+
+        > .d-md-none {
+            display: none !important;
+        }
+
+        @include busnippet-calendarbars-day;
+    }
+}
