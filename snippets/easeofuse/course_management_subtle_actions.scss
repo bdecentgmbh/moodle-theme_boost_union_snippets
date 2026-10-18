@@ -1,0 +1,113 @@
+/**
+ * Snippet Title: Subtle row controls on the course management page
+ * Scope:         global
+ * Goal:          easeofuse
+ * Description:   On the course and category management page, every row carries a drag handle, a bulk checkbox and action icons, which makes the listings look busy. This snippet dims these controls until the row is hovered or focused, a deliberate trade-off of discoverability against a calmer page. The selected category and course keep them at full strength.
+ * Creator:       Stefan-Alexander Scholz
+ * Tested on:     Moodle 5.3, Chrome
+ * Usage note:    The controls are dimmed, never hidden, so they stay clickable. They stay at full strength for users whose system asks for more contrast or uses forced colors.
+ *
+ * @copyright     2026 bdecent GmbH
+ * @author        Stefan-Alexander Scholz <sts@bdecent.de>
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// ---------------------------------------------------------------------------
+// Configuration.
+// ---------------------------------------------------------------------------
+
+// The opacity of the row controls while their row is not in use.
+// Use a value between 0 and 1. The higher the value, the more visible the controls stay.
+$busnippet-managementactions-opacity: .1 !default;
+
+// The duration of the fade. Set it to 0s to switch the controls without a fade.
+$busnippet-managementactions-duration: .15s !default;
+
+// ---------------------------------------------------------------------------
+// The row controls.
+//
+// #course-category-listings is the id of the listing grid on the course and category
+// management page, so the snippet cannot leak into any other page. Everything is scoped
+// to .listitem so that the controls which belong to a whole listing, rather than to a
+// single row, keep their normal appearance.
+//
+// The three controls are: .drag-handle, the move icon which courses carry when they can be
+// resorted; the wrapper around the bulk selection checkbox which both categories and courses
+// carry; and .item-actions, the action menu of the row. The checkbox wrapper is a .form-check
+// from Moodle 5.0 on and a Bootstrap 4 .custom-checkbox in Moodle 4.5, so both are listed.
+// ---------------------------------------------------------------------------
+
+#course-category-listings .listitem {
+    .drag-handle,
+    .form-check,
+    .custom-checkbox,
+    .item-actions {
+        opacity: $busnippet-managementactions-opacity;
+        transition: opacity $busnippet-managementactions-duration ease-in-out;
+    }
+
+    // Bring the controls back as soon as the row is pointed at or used with the keyboard.
+    // :focus-within is what keeps them reachable for keyboard users.
+    //
+    // The selected category and the selected course keep their controls at full strength at
+    // all times. Those are the rows the user is working with, so their controls are the ones
+    // most likely to be needed next, and it gives the selection another visual anchor.
+    // Moodle marks both of them with data-selected, so one rule covers categories and courses.
+    &:hover,
+    &:focus-within,
+    &[data-selected="1"] {
+        .drag-handle,
+        .form-check,
+        .custom-checkbox,
+        .item-actions {
+            opacity: 1;
+        }
+    }
+
+    // Moodle adds the .show class to the action menu while it is open, which keeps the icons
+    // of that row visible even if the focus should wander off into the opened menu.
+    .item-actions.show {
+        opacity: 1;
+    }
+
+    // A ticked checkbox must never be dimmed. A bulk selection which is invisible as soon as
+    // the pointer moves away would be a much worse problem than a busy looking listing.
+    .form-check:has(.bulk-action-checkbox:checked),
+    .custom-checkbox:has(.bulk-action-checkbox:checked) {
+        opacity: 1;
+    }
+}
+
+// As soon as the first checkbox is ticked, a bulk selection is under way. From that moment on,
+// all checkboxes are shown, so that the selection can be extended without hunting for them.
+#course-category-listings:has(.bulk-action-checkbox:checked) .listitem {
+    .form-check,
+    .custom-checkbox {
+        opacity: 1;
+    }
+}
+
+// Respect the users' motion preferences.
+@media (prefers-reduced-motion: reduce) {
+    #course-category-listings .listitem {
+        .drag-handle,
+        .form-check,
+        .custom-checkbox,
+        .item-actions {
+            transition: none;
+        }
+    }
+}
+
+// Never dim the controls for users who ask their system for more contrast or who use forced
+// colors. Both are strong hints that the user relies on seeing all controls at full strength.
+@media (prefers-contrast: more), (forced-colors: active) {
+    #course-category-listings .listitem {
+        .drag-handle,
+        .form-check,
+        .custom-checkbox,
+        .item-actions {
+            opacity: 1;
+        }
+    }
+}
